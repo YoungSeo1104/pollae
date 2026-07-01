@@ -1,0 +1,61 @@
+# 의존성
+/node_modules
+/.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+
+# 테스트
+/coverage
+
+# Next.js 빌드 결과
+/.next/
+/out/
+
+# 프로덕션
+/build
+
+# 환경변수 (절대 커밋 금지)
+.env*.local
+.env.production
+.env
+
+# Vercel
+.vercel
+
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts
+
+# OS 생성 파일
+.DS_Store
+Thumbs.db
+*.pem
+
+# 로그
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# IDE / 에디터
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+.idea/
+*.swp
+*.swo
+
+# Supabase 로컬
+.supabase/
+supabase/.branches
+supabase/.temp
+
+# 디버그
+.claude/
+*.local

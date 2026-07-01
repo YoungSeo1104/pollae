@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>폴래 · 인터랙티브 프로토타입</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css"/>
+<style>
+  html, body { margin:0; padding:0; min-height:100vh; font-family:"Pretendard", -apple-system, system-ui, sans-serif;
+    background:
+      radial-gradient(ellipse at top, #FFE9DD 0%, transparent 50%),
+      radial-gradient(ellipse at bottom right, #F0E0FF 0%, transparent 45%),
+      #FAF5F0;
+    color: #2A1A24;
+  }
+  .layout {
+    display: grid; grid-template-columns: 280px 1fr;
+    min-height: 100vh; max-width: 1400px; margin: 0 auto;
+  }
+  @media (max-width: 720px) {
+    .layout { grid-template-columns: 1fr; }
+    .sidebar { display: none !important; }
+  }
+  .sidebar {
+    padding: 24px 20px; border-right: 1px solid #F0E5DC;
+    background: rgba(255,255,255,0.4); backdrop-filter: blur(6px);
+    height: 100vh; position: sticky; top: 0; overflow-y: auto;
+  }
+  .sb-section { font-size: 10px; font-weight: 700; color: #B89A9A; text-transform: uppercase;
+    letter-spacing: 0.06em; margin: 14px 0 8px 6px; }
+  .sb-section:first-child { margin-top: 0; }
+  .sb-btn { display:flex; align-items:center; gap: 10px;
+    width: 100%; padding: 9px 12px; border-radius: 12px;
+    background: transparent; border: none; cursor: pointer;
+    font: inherit; font-size: 13px; font-weight: 600; color: #5C4954;
+    text-align: left; transition: background .15s, color .15s; }
+  .sb-btn:hover { background: rgba(255,255,255,0.6); }
+  .sb-btn.active { background: linear-gradient(135deg, #FF7AA8, #C8A8E9); color: #fff;
+    box-shadow: 0 4px 12px rgba(255,122,168,0.35); }
+  .sb-btn-num { font-size: 10px; font-weight: 800; opacity: 0.6;
+    width: 18px; flex-shrink: 0; }
+  .sb-btn.active .sb-btn-num { opacity: 1; }
+  .stage { display:flex; align-items:center; justify-content:center;
+    padding: 24px; position: relative; }
+  .stage-inner { transform-origin: center center; }
+  .brand { display:flex; align-items:center; gap: 8px;
+    font-size: 22px; font-weight: 900; letter-spacing:-0.03em;
+    margin-bottom: 18px;
+    background: linear-gradient(135deg, #FF7AA8, #C8A8E9);
+    -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+    background-clip:text;
+  }
+  .brand-emoji { font-size: 22px; -webkit-text-fill-color: initial; }
+  .crumb { font-size: 11px; color: #8A7A6E; margin-bottom: 6px; padding: 0 6px; }
+  .toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
+    background: rgba(31,23,20,0.95); color: white; padding: 10px 18px;
+    border-radius: 99px; font-size: 13px; font-weight: 600;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.2); z-index: 100;
+    animation: toastIn .25s cubic-bezier(.2,.7,.3,1);
+  }
+  @keyframes toastIn { from { transform: translate(-50%, 20px); opacity: 0; } }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+<script type="text/babel" src="ios-frame.jsx"></script>
+<script type="text/babel" src="pollae-tokens.jsx"></script>
+<script type="text/babel" src="cute-themes.jsx"></script>
+<script type="text/babel" src="demo-users.jsx"></script>
+<script type="text/babel" src="cute-chars.jsx"></script>
+<script type="text/babel" src="cute-vote.jsx"></script>
+<script type="text/babel" src="cute-create.jsx"></script>
+<script type="text/babel" src="cute-result.jsx"></script>
+<script type="text/babel" src="cute-states.jsx"></script>
+<script type="text/babel" src="cute-auth.jsx"></script>
+
+<script type="text/babel" data-presets="env,react">
+const {
+  IOSDevice, CUTE_THEMES,
+  LandingScreen, CreateStep1Screen, CreateStep2Screen, CreateStep3Screen,
+  InviteScreen, CuteVotePage, ResultScreen, DashboardScreen,
+  EmptyDashboardScreen, LoadingScreen, ErrorScreen,
+  LoginScreen, GuestConflictScreen, HostManageScreen,
+} = window;
+
+const T = CUTE_THEMES.jellyPeach;
+
+const ROUTES = {
+  'landing':   { c: LandingScreen,      label: '랜딩', group: 'flow', n: 1 },
+  'login':     { c: LoginScreen,        label: '로그인 (호스트)', group: 'flow', n: 2 },
+  'create-1':  { c: CreateStep1Screen,  label: '생성 · 정보', group: 'flow', n: 3 },
+  'create-2':  { c: CreateStep2Screen,  label: '생성 · 일정', group: 'flow', n: 4 },
+  'create-3':  { c: CreateStep3Screen,  label: '생성 · 옵션', group: 'flow', n: 5 },
+  'invite':    { c: InviteScreen,       label: '초대장', group: 'flow', n: 6 },
+  'vote':      { c: CuteVotePage,       label: '투표 페이지', group: 'flow', n: 7 },
+  'conflict':  { c: GuestConflictScreen,label: '중복 의심 (게스트)', group: 'flow', n: 8 },
+  'result':    { c: ResultScreen,       label: '결과 확정', group: 'flow', n: 9 },
+  'dashboard': { c: DashboardScreen,    label: '대시보드', group: 'host', n: 'A' },
+  'manage':    { c: HostManageScreen,   label: '참여자 관리', group: 'host', n: 'B' },
+  'empty':     { c: EmptyDashboardScreen,label: '빈 대시보드', group: 'state', n: 'C' },
+  'loading':   { c: LoadingScreen,      label: '로딩', group: 'state', n: 'D' },
+  'error-notfound': { c: (p) => <ErrorScreen {...p} kind="notfound"/>, label: '에러 · 404', group: 'state', n: 'E' },
+  'error-expired':  { c: (p) => <ErrorScreen {...p} kind="expired"/>,  label: '에러 · 만료', group: 'state', n: 'F' },
+  'error-network':  { c: (p) => <ErrorScreen {...p} kind="network"/>,  label: '에러 · 네트워크', group: 'state', n: 'G' },
+};
+
+const GROUPS = [
+  { id: 'flow',  label: '메인 플로우 (1 → 7)' },
+  { id: 'host',  label: '호스트' },
+  { id: 'state', label: '상태 화면' },
+];
+
+function App() {
+  const [route, setRoute] = React.useState('landing');
+  const [toast, setToast] = React.useState(null);
+
+  // Fit phone to viewport
+  const [scale, setScale] = React.useState(1);
+  React.useEffect(() => {
+    const fit = () => {
+      const vh = window.innerHeight - 80;
+      const vw = window.innerWidth - 360;
+      setScale(Math.min(1, vh / 870, vw / 410));
+    };
+    fit();
+    window.addEventListener('resize', fit);
+    return () => window.removeEventListener('resize', fit);
+  }, []);
+
+  // Show toast briefly when route changes via Nav
+  const nav = React.useCallback((to) => {
+    if (!ROUTES[to]) {
+      setToast(`알 수 없는 경로: ${to}`);
+      setTimeout(() => setToast(null), 1500);
+      return;
+    }
+    if (to === 'loading') {
+      setRoute('loading');
+      setTimeout(() => setRoute('vote'), 1400);
+      return;
+    }
+    setRoute(to);
+  }, []);
+
+  // ESC = back to landing
+  React.useEffect(() => {
+    const h = (e) => {
+      if (e.key === 'Escape') setRoute('landing');
+    };
+    window.addEventListener('keydown', h);
+    return () => window.removeEventListener('keydown', h);
+  }, []);
+
+  const Current = ROUTES[route].c;
+
+  return (
+    <div className="layout">
+      {/* Sidebar */}
+      <aside className="sidebar">
+        <div className="brand">
+          <span className="brand-emoji">🗳️</span>
+          폴래
+        </div>
+        <div style={{fontSize: 11, color:'#8A7A6E', marginBottom: 18, paddingLeft: 6}}>
+          버튼을 클릭하면 실제로 이동해요.<br/>
+          <kbd style={{
+            fontSize: 10, padding:'1px 5px', background:'rgba(0,0,0,0.06)',
+            borderRadius: 4, fontFamily:'inherit',
+          }}>ESC</kbd> 누르면 처음으로
+        </div>
+        {GROUPS.map(g => (
+          <div key={g.id}>
+            <div className="sb-section">{g.label}</div>
+            {Object.entries(ROUTES)
+              .filter(([k, v]) => v.group === g.id)
+              .map(([k, v]) => (
+                <button
+                  key={k}
+                  className={'sb-btn' + (route === k ? ' active' : '')}
+                  onClick={() => setRoute(k)}
+                >
+                  <span className="sb-btn-num">{v.n}</span>
+                  {v.label}
+                </button>
+              ))
+            }
+          </div>
+        ))}
+      </aside>
+
+      {/* Phone stage */}
+      <main className="stage">
+        <div className="stage-inner" style={{transform:`scale(${scale})`}}>
+          <div className="crumb">{ROUTES[route].group} · {route}</div>
+          <IOSDevice width={402} height={874}>
+            <Current theme={T} nav={nav}/>
+          </IOSDevice>
+        </div>
+      </main>
+
+      {toast && <div className="toast">{toast}</div>}
+    </div>
+  );
+}
+
+const ready = () => {
+  if (window.LandingScreen && window.CuteVotePage && window.EmptyDashboardScreen) {
+    ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+  } else setTimeout(ready, 50);
+};
+ready();
+</script>
+</body>
+</html>

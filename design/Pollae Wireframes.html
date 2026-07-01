@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>폴래 (Pollae) — Wireframes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css"/>
+<style>
+  html, body { margin:0; padding:0; background: #f0eee9; font-family: "Pretendard", -apple-system, system-ui, sans-serif; }
+  #root { min-height: 100vh; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+<script type="text/babel" src="design-canvas.jsx"></script>
+<script type="text/babel" src="wf-shared.jsx"></script>
+<script type="text/babel" src="wf-flow.jsx"></script>
+<script type="text/babel" src="wf-vote.jsx"></script>
+<script type="text/babel" src="wf-desktop.jsx"></script>
+
+<script type="text/babel" data-presets="env,react">
+const { DesignCanvas, DCSection, DCArtboard, DCPostIt } = window;
+
+// Wrapper: phone-shaped frame around a screen.
+const Phone = ({ children, label }) => (
+  <WFPhone width={320} height={640} label={label}>{children}</WFPhone>
+);
+
+const App = () => (
+  <DesignCanvas
+    initialZoom={0.7}
+    title="폴래 (Pollae)"
+    subtitle="일정 조율 투표 서비스 · 와이어프레임"
+  >
+    {/* ============ FLOW ============ */}
+    <DCSection
+      id="flow"
+      title="1. 메인 플로우"
+      subtitle="랜딩 → 투표 생성(3단계) → 공유 → 결과 확정 → 호스트 대시보드"
+    >
+      <DCArtboard id="landing" label="① 랜딩/홈" width={338} height={680}>
+        <Phone><ScreenLanding/></Phone>
+      </DCArtboard>
+      <DCArtboard id="create1" label="② 생성 · 이벤트 정보" width={338} height={680}>
+        <Phone><ScreenCreate1/></Phone>
+      </DCArtboard>
+      <DCArtboard id="create2" label="③ 생성 · 일정 후보" width={338} height={680}>
+        <Phone><ScreenCreate2/></Phone>
+      </DCArtboard>
+      <DCArtboard id="create3" label="④ 생성 · 옵션" width={338} height={680}>
+        <Phone><ScreenCreate3/></Phone>
+      </DCArtboard>
+      <DCArtboard id="invite" label="⑤ 초대장 / 공유" width={338} height={680}>
+        <Phone><ScreenInvite/></Phone>
+      </DCArtboard>
+      <DCArtboard id="result" label="⑥ 마감 후 확정" width={338} height={680}>
+        <Phone><ScreenResult/></Phone>
+      </DCArtboard>
+      <DCArtboard id="dashboard" label="⑦ 호스트 대시보드" width={338} height={680}>
+        <Phone><ScreenDashboard/></Phone>
+      </DCArtboard>
+    </DCSection>
+
+    {/* ============ VOTE PAGE VARIANTS ============ */}
+    <DCSection
+      id="vote"
+      title="2. 투표 페이지 변주 (핵심 화면)"
+      subtitle="같은 데이터 · 다른 레이아웃과 인터랙션 ─ 비교해보세요"
+    >
+      <DCArtboard id="vote-a" label="A · 카드 묶음 (○△× 심볼)" width={338} height={680}>
+        <Phone><VoteVariantA/></Phone>
+      </DCArtboard>
+      <DCArtboard id="vote-b" label="B · 그리드 (한눈에 비교)" width={338} height={680}>
+        <Phone><VoteVariantB/></Phone>
+      </DCArtboard>
+      <DCArtboard id="vote-c" label="C · 이모지 + 피치 톤 (친근)" width={338} height={680}>
+        <Phone><VoteVariantC/></Phone>
+      </DCArtboard>
+      <DCArtboard id="vote-d" label="D · 비공개 (숫자 + 바 차트)" width={338} height={680}>
+        <Phone><VoteVariantD/></Phone>
+      </DCArtboard>
+    </DCSection>
+
+    {/* ============ DESKTOP ============ */}
+    <DCSection
+      id="desktop"
+      title="3. 데스크탑 뷰"
+      subtitle="모바일 퍼스트지만 PC에서 열어도 자연스럽게"
+    >
+      <DCArtboard id="dt-vote" label="투표 페이지 (데스크탑)" width={1100} height={700}>
+        <DesktopVote/>
+      </DCArtboard>
+      <DCArtboard id="dt-dash" label="호스트 대시보드 (데스크탑)" width={1100} height={700}>
+        <DesktopDashboard/>
+      </DCArtboard>
+    </DCSection>
+
+    {/* ============ NOTES ============ */}
+    <DCSection
+      id="notes"
+      title="4. 메모 / 다음 단계"
+      subtitle="검토해주실 사항"
+    >
+      <DCPostIt x={40} y={40} width={280}>
+        와이어프레임은 구조와 플로우 확인용입니다.{'\n\n'}
+        ○△× 버튼 스타일·컬러·일러스트는 다음 단계(하이파이)에서 입혀요.
+      </DCPostIt>
+      <DCPostIt x={340} y={40} width={280} color="#ffd1bd">
+        검토 포인트:{'\n\n'}
+        • 투표 페이지 A/B/C/D 중 어느 방향?{'\n'}
+        • 생성 플로우 3단계가 적당한가?{'\n'}
+        • '투표 완료' 버튼 → 제출 vs 자동저장?
+      </DCPostIt>
+      <DCPostIt x={640} y={40} width={280} color="#cfe6cf">
+        다음 단계 (하이파이):{'\n\n'}
+        ① 선택된 투표 페이지 방향 + 컬러/타입 적용{'\n'}
+        ② Tweaks 패널로 버튼 스타일·톤 변주{'\n'}
+        ③ 마이크로 인터랙션 (응답 후 카운터 애니메이션 등)
+      </DCPostIt>
+    </DCSection>
+  </DesignCanvas>
+);
+
+const waitForDeps = () => {
+  if (window.DesignCanvas && window.ScreenLanding && window.VoteVariantA && window.DesktopVote) {
+    ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+  } else {
+    setTimeout(waitForDeps, 50);
+  }
+};
+waitForDeps();
+</script>
+</body>
+</html>

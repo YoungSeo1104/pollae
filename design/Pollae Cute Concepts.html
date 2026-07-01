@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>폴래 · 큐트 시안 (1020 타겟)</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css"/>
+<style>
+  html, body { margin:0; padding:0; background: #f0eee9; font-family: "Pretendard", -apple-system, system-ui, sans-serif; }
+  #root { min-height: 100vh; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+<script type="text/babel" src="design-canvas.jsx"></script>
+<script type="text/babel" src="ios-frame.jsx"></script>
+<script type="text/babel" src="pollae-tokens.jsx"></script>
+<script type="text/babel" src="cute-themes.jsx"></script>
+<script type="text/babel" src="cute-chars.jsx"></script>
+<script type="text/babel" src="cute-vote.jsx"></script>
+
+<script type="text/babel" data-presets="env,react">
+const { DesignCanvas, DCSection, DCArtboard, DCPostIt, IOSDevice, CuteVotePage, CUTE_THEMES, CuteAvatar, CHARS, CHAR_KEYS } = window;
+
+// Phone-sized device for each theme
+const Device = ({ children }) => (
+  <IOSDevice width={390} height={820}>{children}</IOSDevice>
+);
+
+// Color swatch row for theme overview
+const SwatchRow = ({ theme }) => {
+  const swatches = [
+    { c: theme.primary, l: 'primary' },
+    { c: theme.pop, l: 'pop' },
+    { c: theme.accent, l: 'accent' },
+    { c: theme.yes, l: 'yes' },
+    { c: theme.maybe, l: 'maybe' },
+    { c: theme.no, l: 'no' },
+  ];
+  return (
+    <div style={{display:'flex', gap: 8, padding: 16, background: theme.surface,
+      borderRadius: 16, border: `1px solid ${theme.border}`}}>
+      {swatches.map(s => (
+        <div key={s.l} style={{flex:1, textAlign:'center'}}>
+          <div style={{
+            height: 44, borderRadius: 12, background: s.c,
+            boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
+          }}/>
+          <div style={{fontSize: 9, color: theme.inkSoft, marginTop: 4, fontWeight: 600}}>{s.l}</div>
+          <div style={{fontSize: 9, color: theme.inkMute, fontFamily:'monospace'}}>{s.c}</div>
+        </div>
+      ))}
+    </div>
+  );
+};
+
+// Character library overview
+const CharBoard = ({ theme }) => (
+  <div style={{
+    padding: 20, background: theme.surface, borderRadius: 20,
+    border: `1px solid ${theme.border}`,
+  }}>
+    <div style={{
+      fontSize: 14, fontWeight: 800, color: theme.ink, marginBottom: 12,
+    }}>캐릭터 8종 — {theme.name}</div>
+    <div style={{display:'grid', gridTemplateColumns:'repeat(4, 1fr)', gap: 18, rowGap: 22}}>
+      {CHAR_KEYS.map((k, i) => {
+        const Char = CHARS[k];
+        const color = theme.charPalette[i % theme.charPalette.length];
+        const names = ['둥글','토끼','곰','별','고양','부엉','펭귄','햄찌'];
+        return (
+          <div key={k} style={{textAlign:'center'}}>
+            <div style={{
+              width: 64, height: 64, borderRadius: '50%',
+              background: theme.charBg, margin:'0 auto',
+              display:'flex', alignItems:'center', justifyContent:'center',
+            }}>
+              <Char size={58} color={color} blushColor={theme.blush}/>
+            </div>
+            <div style={{fontSize: 11, fontWeight: 600, marginTop: 6, color: theme.ink}}>
+              {names[i]}
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  </div>
+);
+
+const App = () => (
+  <DesignCanvas
+    initialZoom={0.55}
+    title="폴래 · 큐트 시안"
+    subtitle="1020 타겟 · 3가지 컬러 테마 + 캐릭터 아바타"
+  >
+    <DCSection
+      id="phones"
+      title="투표 페이지 시안 3종"
+      subtitle="같은 컨텐츠 · 다른 테마. 가운데 베스트 슬롯에 응답되어 있음."
+    >
+      <DCArtboard id="jelly" label="A · 젤리피치 (핑크+피치+라벤더)" width={414} height={844}>
+        <Device><CuteVotePage theme={CUTE_THEMES.jellyPeach}/></Device>
+      </DCArtboard>
+      <DCArtboard id="mint" label="B · 민트캠퍼스 (민트+노랑+코랄)" width={414} height={844}>
+        <Device><CuteVotePage theme={CUTE_THEMES.mintCampus}/></Device>
+      </DCArtboard>
+      <DCArtboard id="y2k" label="C · Y2K POP (보라+그린+핫핑크)" width={414} height={844}>
+        <Device><CuteVotePage theme={CUTE_THEMES.y2kPop}/></Device>
+      </DCArtboard>
+    </DCSection>
+
+    <DCSection
+      id="palette"
+      title="컬러 팔레트"
+      subtitle="각 테마의 핵심 컬러 6종"
+    >
+      <DCArtboard id="pal-jelly" label="A · 젤리피치" width={520} height={120}>
+        <SwatchRow theme={CUTE_THEMES.jellyPeach}/>
+      </DCArtboard>
+      <DCArtboard id="pal-mint" label="B · 민트캠퍼스" width={520} height={120}>
+        <SwatchRow theme={CUTE_THEMES.mintCampus}/>
+      </DCArtboard>
+      <DCArtboard id="pal-y2k" label="C · Y2K POP" width={520} height={120}>
+        <SwatchRow theme={CUTE_THEMES.y2kPop}/>
+      </DCArtboard>
+    </DCSection>
+
+    <DCSection
+      id="chars"
+      title="캐릭터 라이브러리"
+      subtitle="이름 해시로 결정 — 같은 사람은 항상 같은 캐릭터로 표시"
+    >
+      <DCArtboard id="char-jelly" label="A · 젤리피치 컬러" width={420} height={340}>
+        <CharBoard theme={CUTE_THEMES.jellyPeach}/>
+      </DCArtboard>
+      <DCArtboard id="char-mint" label="B · 민트캠퍼스 컬러" width={420} height={340}>
+        <CharBoard theme={CUTE_THEMES.mintCampus}/>
+      </DCArtboard>
+      <DCArtboard id="char-y2k" label="C · Y2K POP 컬러" width={420} height={340}>
+        <CharBoard theme={CUTE_THEMES.y2kPop}/>
+      </DCArtboard>
+    </DCSection>
+
+    <DCSection
+      id="notes"
+      title="고민 포인트"
+      subtitle=""
+    >
+      <DCPostIt x={30} y={30} width={300}>
+        세 시안의 차이점:{'\n\n'}
+        A · 따뜻+친근, 가장 보편적{'\n'}
+        B · 깨끗+활기, 동아리 분위기와 매치{'\n'}
+        C · 인스타 톤, 더 어린 10대 hit
+      </DCPostIt>
+      <DCPostIt x={360} y={30} width={300} color="#ffd1bd">
+        캐릭터:{'\n\n'}
+        • 8종 모두 SVG 자체 제작 (변경/추가 가능){'\n'}
+        • 이름 해시 → 항상 같은 캐릭터+색{'\n'}
+        • 호스트는 👑 뱃지 자동 부여{'\n'}
+        • 미투표는 회색 처리
+      </DCPostIt>
+      <DCPostIt x={690} y={30} width={300} color="#cfe6cf">
+        다음 단계:{'\n\n'}
+        ① 시안 1개 선택 (또는 믹스){'\n'}
+        ② 나머지 6개 화면 적용{'\n'}
+        ③ 캐릭터 더 추가하거나 디테일 조정
+      </DCPostIt>
+    </DCSection>
+  </DesignCanvas>
+);
+
+const ready = () => {
+  if (window.DesignCanvas && window.CuteVotePage && window.IOSDevice && window.CUTE_THEMES) {
+    ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+  } else setTimeout(ready, 50);
+};
+ready();
+</script>
+</body>
+</html>

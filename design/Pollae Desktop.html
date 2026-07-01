@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>폴래 · 데스크탑</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css"/>
+<style>
+  html, body { margin:0; padding:0; background: #f0eee9; font-family: "Pretendard", -apple-system, system-ui, sans-serif; }
+  #root { min-height: 100vh; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+<script type="text/babel" src="design-canvas.jsx"></script>
+<script type="text/babel" src="pollae-tokens.jsx"></script>
+<script type="text/babel" src="cute-themes.jsx"></script>
+<script type="text/babel" src="demo-users.jsx"></script>
+<script type="text/babel" src="cute-chars.jsx"></script>
+<script type="text/babel" src="cute-desktop.jsx"></script>
+
+<script type="text/babel" data-presets="env,react">
+const {
+  DesignCanvas, DCSection, DCArtboard, DCPostIt,
+  CUTE_THEMES, BrowserWindow, DesktopLanding, DesktopVote, DesktopDashboard,
+} = window;
+
+const T = CUTE_THEMES.jellyPeach;
+
+const App = () => (
+  <DesignCanvas
+    initialZoom={0.42}
+    title="폴래 · 데스크탑"
+    subtitle="브라우저 버전 · 같은 톤 / 시스템 / 캐릭터"
+  >
+    <DCSection id="landing" title="1. 랜딩" subtitle="">
+      <DCArtboard id="dt-landing" label="랜딩 페이지" width={1280} height={800}>
+        <BrowserWindow url="pollae.kr" theme={T} width={1280} height={800}>
+          <DesktopLanding theme={T}/>
+        </BrowserWindow>
+      </DCArtboard>
+    </DCSection>
+
+    <DCSection id="vote" title="2. 투표 페이지" subtitle="2단 레이아웃 — 일정/응답 + 참여자/공유">
+      <DCArtboard id="dt-vote" label="투표 페이지 (데스크탑)" width={1280} height={800}>
+        <BrowserWindow url="pollae.kr/v/k7n2qp" theme={T} width={1280} height={800}>
+          <DesktopVote theme={T}/>
+        </BrowserWindow>
+      </DCArtboard>
+    </DCSection>
+
+    <DCSection id="dashboard" title="3. 호스트 대시보드" subtitle="사이드바 + 메인">
+      <DCArtboard id="dt-dash" label="호스트 대시보드 (데스크탑)" width={1280} height={800}>
+        <BrowserWindow url="pollae.kr/home" theme={T} width={1280} height={800}>
+          <DesktopDashboard theme={T}/>
+        </BrowserWindow>
+      </DCArtboard>
+    </DCSection>
+
+    <DCSection id="notes" title="" subtitle="">
+      <DCPostIt x={30} y={30} width={320}>
+        ✅ 데스크탑 적용:{'\n\n'}
+        • 같은 컴포넌트 시스템 / 톤 / 캐릭터{'\n'}
+        • 더 넓은 레이아웃 활용 (2단/사이드바){'\n'}
+        • 호버 인터랙션 가능한 큰 터치 영역{'\n'}
+        • 캐릭터 아바타가 일정 옆에 함께 표시
+      </DCPostIt>
+      <DCPostIt x={370} y={30} width={300} color="#ffd1bd">
+        💬 데스크탑만의 가치:{'\n\n'}
+        • 일정 선택과 참여자 현황 동시에{'\n'}
+        • 호스트가 여러 투표 관리 편하게{'\n'}
+        • 캘린더 뷰 (추후){'\n'}
+        • 키보드 단축키 (추후)
+      </DCPostIt>
+    </DCSection>
+  </DesignCanvas>
+);
+
+const ready = () => {
+  if (window.DesignCanvas && window.DesktopLanding && window.DesktopVote && window.DesktopDashboard) {
+    ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+  } else setTimeout(ready, 50);
+};
+ready();
+</script>
+</body>
+</html>

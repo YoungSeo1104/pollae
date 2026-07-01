@@ -1,0 +1,691 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>폴래 · 디자인 시스템</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css"/>
+<style>
+  html, body { margin:0; padding:0; background: #f0eee9; font-family: "Pretendard", -apple-system, system-ui, sans-serif; }
+  #root { min-height: 100vh; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+<script type="text/babel" src="design-canvas.jsx"></script>
+<script type="text/babel" src="pollae-tokens.jsx"></script>
+<script type="text/babel" src="cute-themes.jsx"></script>
+<script type="text/babel" src="demo-users.jsx"></script>
+<script type="text/babel" src="cute-chars.jsx"></script>
+<script type="text/babel" src="cute-vote.jsx"></script>
+<script type="text/babel" src="cute-create.jsx"></script>
+<script type="text/babel" src="cute-result.jsx"></script>
+<script type="text/babel" src="storybook-atoms.jsx"></script>
+
+<script type="text/babel" data-presets="env,react">
+const {
+  DesignCanvas, DCSection, DCArtboard,
+  CUTE_THEMES, EMOJI_AVATARS, CuteAvatar,
+  NavBar, PrimaryBtn, ProgressDots,
+  SBCard, SBVariantRow, SBCode, SBSwatch, SBType,
+  SBRadius, SBSpace, SBShadow,
+} = window;
+
+const T = CUTE_THEMES.jellyPeach;
+
+// ═══════════════════════════════════════════════════════════════
+// FOUNDATION
+// ═══════════════════════════════════════════════════════════════
+
+const FoundationColors = () => (
+  <div>
+    <SBVariantRow label="Brand" gap={14}>
+      <SBSwatch name="Primary" value={T.primary} size="lg"/>
+      <SBSwatch name="Primary Deep" value={T.primaryDeep} size="lg"/>
+      <SBSwatch name="Pop" value={T.pop} size="lg"/>
+      <SBSwatch name="Accent" value={T.accent} size="lg"/>
+    </SBVariantRow>
+    <SBVariantRow label="Soft fills" gap={14}>
+      <SBSwatch name="Primary Soft" value={T.primarySoft}/>
+      <SBSwatch name="Pop Soft" value={T.popSoft}/>
+      <SBSwatch name="Accent Soft" value={T.accentSoft}/>
+      <SBSwatch name="Bg" value={T.bg}/>
+    </SBVariantRow>
+    <SBVariantRow label="Vote state" gap={14}>
+      <SBSwatch name="Yes (참석)" value={T.yes}/>
+      <SBSwatch name="Maybe (미정)" value={T.maybe}/>
+      <SBSwatch name="No (불참)" value={T.no}/>
+      <SBSwatch name="Yes Soft" value={T.yesSoft}/>
+      <SBSwatch name="Maybe Soft" value={T.maybeSoft}/>
+      <SBSwatch name="No Soft" value={T.noSoft}/>
+    </SBVariantRow>
+    <SBVariantRow label="Text" gap={14}>
+      <SBSwatch name="Ink" value={T.ink}/>
+      <SBSwatch name="Ink Soft" value={T.inkSoft}/>
+      <SBSwatch name="Ink Mute" value={T.inkMute}/>
+      <SBSwatch name="Ink Faint" value={T.inkFaint}/>
+    </SBVariantRow>
+    <SBVariantRow label="Surface & border" gap={14}>
+      <SBSwatch name="Surface" value={T.surface}/>
+      <SBSwatch name="Surface Alt" value={T.surfaceAlt}/>
+      <SBSwatch name="Border" value={T.border}/>
+      <SBSwatch name="Divider" value={T.divider}/>
+    </SBVariantRow>
+  </div>
+);
+
+const FoundationType = () => (
+  <div>
+    <SBType label="Display" sample="우리, 언제 만날까요?" size={28} weight={900}/>
+    <SBType label="Title 1" sample="동아리 MT 잡기 🌱" size={22} weight={900}/>
+    <SBType label="Title 2" sample="언제 만나면 좋아요?" size={18} weight={800}/>
+    <SBType label="Body" sample="가능한 시간에 응답해주세요" size={14} weight={600}/>
+    <SBType label="Caption" sample="응답 5명 · 미투표 3명" size={11} weight={600}/>
+    <SBType label="Micro" sample="D-3" size={10} weight={700}/>
+    <div style={{fontSize: 10, color: '#8A7A6E', marginTop: 12, fontWeight: 500}}>
+      Font: <SBCode>Pretendard</SBCode> · letter-spacing: -0.02em on titles
+    </div>
+  </div>
+);
+
+const FoundationRadius = () => (
+  <div style={{display:'flex', gap: 16, flexWrap:'wrap'}}>
+    {[8, 12, 14, 16, 18, 20, 22, 99].map(r => <SBRadius key={r} value={r}/>)}
+  </div>
+);
+
+const FoundationSpacing = () => (
+  <div style={{display:'flex', flexDirection:'column', gap: 8}}>
+    {[
+      {l:'xs', v:4},{l:'sm', v:8},{l:'md', v:12},{l:'lg', v:16},
+      {l:'xl', v:20},{l:'2xl', v:24},{l:'3xl', v:32},
+    ].map(s => <SBSpace key={s.l} label={s.l} value={s.v}/>)}
+  </div>
+);
+
+const FoundationShadows = () => (
+  <div style={{display:'flex', gap: 16, flexWrap:'wrap'}}>
+    <SBShadow name="Soft" value="0 1px 3px rgba(0,0,0,0.06)"/>
+    <SBShadow name="Lifted" value={`0 8px 24px ${T.primary}15`}/>
+    <SBShadow name="Float" value="0 12px 30px rgba(255,122,168,0.4)"/>
+  </div>
+);
+
+// ═══════════════════════════════════════════════════════════════
+// ATOMS — Buttons
+// ═══════════════════════════════════════════════════════════════
+
+const AtomsButtons = () => (
+  <div>
+    <SBVariantRow label="Primary" column>
+      <div style={{width: 240}}>
+        <PrimaryBtn theme={T}><span style={{fontSize:17}}>＋</span> 새 투표 만들기</PrimaryBtn>
+      </div>
+      <div style={{width: 240}}>
+        <PrimaryBtn theme={T}>다음 →</PrimaryBtn>
+      </div>
+    </SBVariantRow>
+    <SBVariantRow label="Ghost" column>
+      <div style={{width: 240}}>
+        <PrimaryBtn theme={T} ghost>참여한 투표 보기</PrimaryBtn>
+      </div>
+    </SBVariantRow>
+    <SBVariantRow label="Disabled" column>
+      <div style={{width: 240}}>
+        <PrimaryBtn theme={T} disabled>시간을 골라주세요</PrimaryBtn>
+      </div>
+    </SBVariantRow>
+    <SBVariantRow label="Pill / chip">
+      <button className="pl-pressable" style={{
+        padding:'7px 14px', borderRadius: 99, background: T.primary, color:'#fff',
+        fontSize: 12, fontWeight: 700, border:'none',
+      }}>진행중 2</button>
+      <button className="pl-pressable" style={{
+        padding:'7px 14px', borderRadius: 99, background: T.surface, color: T.inkSoft,
+        fontSize: 12, fontWeight: 700, border:`1px solid ${T.border}`,
+      }}>마감됨 5</button>
+      <button className="pl-pressable" style={{
+        padding:'8px 14px', borderRadius: 12, background: T.primary, color:'#fff',
+        fontSize: 12, fontWeight: 800, border:'none',
+      }}>복사</button>
+    </SBVariantRow>
+  </div>
+);
+
+const AtomsInputs = () => (
+  <div>
+    <SBVariantRow label="Default" column>
+      <input placeholder="이름 입력" style={{
+        width: 240, height: 52, padding: '0 16px', fontSize: 15, fontWeight: 700,
+        background: T.surface, border:`1.5px solid ${T.border}`, borderRadius: 16,
+        color: T.ink, outline:'none', fontFamily:'inherit', boxSizing:'border-box',
+      }}/>
+    </SBVariantRow>
+    <SBVariantRow label="Focused" column>
+      <input defaultValue="민지" style={{
+        width: 240, height: 52, padding: '0 16px', fontSize: 15, fontWeight: 700,
+        background: T.surface, border:`1.5px solid ${T.primary}`, borderRadius: 16,
+        color: T.ink, outline:'none', fontFamily:'inherit', boxSizing:'border-box',
+      }}/>
+    </SBVariantRow>
+    <SBVariantRow label="With avatar prefix" column>
+      <div style={{width: 240, position:'relative'}}>
+        <div style={{position:'absolute', left: 10, top: 10, zIndex: 1}}>
+          <CuteAvatar avatar="🐰" avatarColor={T.charPalette[0]} size={32} theme={T} done/>
+        </div>
+        <input defaultValue="민지" style={{
+          width:'100%', height: 52, padding:'0 16px 0 52px',
+          fontSize: 15, fontWeight: 700, background: T.surface,
+          border:`1.5px solid ${T.border}`, borderRadius: 16,
+          color: T.ink, outline:'none', fontFamily:'inherit', boxSizing:'border-box',
+        }}/>
+      </div>
+    </SBVariantRow>
+    <SBVariantRow label="Textarea" column>
+      <textarea defaultValue="가능한 일정에 👍 표시해주세요!" style={{
+        width: 240, height: 80, padding: 14, fontSize: 13,
+        fontFamily:'inherit', background: T.surface, border:`1.5px solid ${T.border}`,
+        borderRadius: 16, color: T.ink, outline:'none', resize:'none', boxSizing:'border-box',
+      }}/>
+    </SBVariantRow>
+  </div>
+);
+
+const AtomsToggle = () => {
+  const [a, setA] = React.useState(true);
+  const [b, setB] = React.useState(false);
+  const Toggle = ({ on, set }) => (
+    <button onClick={() => set(!on)} style={{
+      width: 44, height: 26, borderRadius: 13, padding: 0,
+      background: on ? T.primary : T.border,
+      position:'relative', border:'none', cursor:'pointer', transition:'background 0.2s',
+    }}>
+      <div style={{
+        position:'absolute', top: 3, left: on ? 21 : 3,
+        width: 20, height: 20, borderRadius: 10,
+        background:'#fff', boxShadow:'0 1px 3px rgba(0,0,0,0.2)',
+        transition: 'left 0.2s',
+      }}/>
+    </button>
+  );
+  return (
+    <div>
+      <SBVariantRow label="On / Off">
+        <Toggle on={a} set={setA}/>
+        <Toggle on={b} set={setB}/>
+      </SBVariantRow>
+      <SBVariantRow label="Progress Dots">
+        <ProgressDots theme={T} step={0}/>
+        <ProgressDots theme={T} step={1}/>
+        <ProgressDots theme={T} step={2}/>
+      </SBVariantRow>
+    </div>
+  );
+};
+
+// Chip atom (used throughout)
+const Chip = ({ kind = 'default', children, dot }) => {
+  const styles = {
+    default: { bg: T.surface, color: T.inkSoft, border: T.border },
+    primary: { bg: T.primarySoft, color: T.primaryDeep, border: T.primarySoft },
+    ink: { bg: T.ink, color: '#fff', border: T.ink },
+    yes: { bg: T.yesSoft, color: T.yes, border: T.yesSoft },
+    dashed: { bg: T.bg, color: T.inkSoft, border: T.border, dashed: true },
+  }[kind];
+  return (
+    <span style={{
+      display:'inline-flex', alignItems:'center', gap: 4,
+      padding:'4px 10px', borderRadius: 99,
+      background: styles.bg, color: styles.color,
+      border: `1px ${styles.dashed?'dashed':'solid'} ${styles.border}`,
+      fontSize: 11, fontWeight: 700, lineHeight: 1.3,
+    }}>
+      {dot && <span style={{width:5, height:5, borderRadius:3, background:'currentColor'}}/>}
+      {children}
+    </span>
+  );
+};
+
+const AtomsChips = () => (
+  <div>
+    <SBVariantRow label="Status">
+      <Chip kind="primary" dot>진행 중 · D-3</Chip>
+      <Chip kind="ink" dot>마감됨</Chip>
+      <Chip kind="yes">✓ 완료 5</Chip>
+      <Chip kind="dashed">⏳ 아직 3명</Chip>
+      <Chip>🔒 비공개</Chip>
+    </SBVariantRow>
+    <SBVariantRow label="Crown badge">
+      <span className="pl-pop" style={{
+        fontSize: 10, fontWeight: 800, color: '#fff',
+        background: `linear-gradient(135deg, ${T.pop}, ${T.primary})`,
+        padding: '3px 7px 3px 6px', borderRadius: 99,
+        display:'inline-flex', alignItems:'center', gap: 2,
+        boxShadow: `0 2px 6px ${T.primary}40`,
+      }}>👑 최다</span>
+      <span style={{
+        background: T.primary, color:'#fff',
+        fontSize: 9, fontWeight: 800, padding:'3px 9px',
+        borderRadius: 99,
+      }}>🔥 HOT</span>
+    </SBVariantRow>
+  </div>
+);
+
+const AtomsAvatars = () => {
+  // Use stable emoji choices so storybook examples don't shuffle on re-render
+  const palette = T.charPalette;
+  return (
+    <div>
+      <SBVariantRow label="Sizes">
+        <CuteAvatar avatar="🐰" avatarColor={palette[0]} size={28} theme={T} done/>
+        <CuteAvatar avatar="🍑" avatarColor={palette[1]} size={36} theme={T} done/>
+        <CuteAvatar avatar="🌸" avatarColor={palette[2]} size={44} theme={T} done/>
+        <CuteAvatar avatar="🦄" avatarColor={palette[3]} size={56} theme={T} done/>
+      </SBVariantRow>
+      <SBVariantRow label="States">
+        <div style={{textAlign:'center'}}>
+          <CuteAvatar avatar="🐱" avatarColor={palette[0]} size={48} theme={T} done/>
+          <div style={{fontSize:10, marginTop:4, fontWeight:600}}>Done</div>
+        </div>
+        <div style={{textAlign:'center'}}>
+          <CuteAvatar avatar="🦊" avatarColor={palette[1]} size={48} theme={T} done host/>
+          <div style={{fontSize:10, marginTop:4, fontWeight:600}}>Host 👑</div>
+        </div>
+        <div style={{textAlign:'center'}}>
+          <CuteAvatar avatar="🐧" avatarColor={palette[2]} size={48} theme={T} done={false}/>
+          <div style={{fontSize:10, marginTop:4, fontWeight:600}}>Not voted</div>
+        </div>
+        <div style={{textAlign:'center'}}>
+          <CuteAvatar avatar="🌙" avatarColor={palette[3]} size={48} theme={T} done ring="rgba(255,122,168,0.4)"/>
+          <div style={{fontSize:10, marginTop:4, fontWeight:600}}>Ring</div>
+        </div>
+      </SBVariantRow>
+      <SBVariantRow label="Stack (overlap)">
+        <div style={{display:'flex'}}>
+          {['🐰','🍑','🌸','🦄','🐱'].map((e, i) => (
+            <div key={i} style={{marginLeft: i === 0 ? 0 : -10}}>
+              <CuteAvatar avatar={e} avatarColor={palette[i]} size={32} theme={T} done ring="#fff"/>
+            </div>
+          ))}
+        </div>
+      </SBVariantRow>
+    </div>
+  );
+};
+
+// ═══════════════════════════════════════════════════════════════
+// VOTE COMPONENTS
+// ═══════════════════════════════════════════════════════════════
+
+const VoteBtnDemo = () => {
+  const Btn = ({ kind, active, count }) => {
+    const colorMap = {
+      yes: { fg: T.yes, soft: T.yesSoft },
+      maybe: { fg: T.maybe, soft: T.maybeSoft },
+      no: { fg: T.no, soft: T.noSoft },
+    }[kind];
+    const emoji = { yes:'👍', maybe:'🤔', no:'👎' }[kind];
+    return (
+      <button className="pl-pressable" style={{
+        width: 72, height: 56, borderRadius: 18,
+        background: active ? colorMap.fg : '#fff',
+        border: `2px solid ${active ? colorMap.fg : T.border}`,
+        color: active ? '#fff' : T.ink,
+        display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center',
+        gap: 1,
+        boxShadow: active ? `0 6px 14px ${colorMap.fg}50, 0 0 0 3px ${colorMap.soft}` : '0 1px 2px rgba(0,0,0,0.04)',
+      }}>
+        <span style={{fontSize: 22, lineHeight: 1, filter: active ? 'none' : 'grayscale(0.15)'}}>{emoji}</span>
+        <span style={{fontSize: 10, fontWeight: 700, color: active ? '#fff' : colorMap.fg}}>{count}</span>
+      </button>
+    );
+  };
+  return (
+    <div>
+      <SBVariantRow label="Inactive">
+        <Btn kind="yes" count={4}/>
+        <Btn kind="maybe" count={1}/>
+        <Btn kind="no" count={0}/>
+      </SBVariantRow>
+      <SBVariantRow label="Active (selected)">
+        <Btn kind="yes" active count={5}/>
+        <Btn kind="maybe" active count={2}/>
+        <Btn kind="no" active count={1}/>
+      </SBVariantRow>
+    </div>
+  );
+};
+
+const HeroDemo = () => (
+  <div style={{
+    background: `linear-gradient(135deg, ${T.primary} 0%, ${T.pop} 100%)`,
+    borderRadius: 22, padding: 18, color:'#fff', position:'relative',
+    overflow:'hidden', boxShadow:`0 12px 30px ${T.primary}40`,
+    width: 320,
+  }}>
+    <div style={{position:'absolute', top: 12, right: 14, fontSize: 24, opacity: 0.9,
+      transform:'rotate(15deg)'}}>✨</div>
+    <div style={{
+      display:'inline-flex', alignItems:'center', gap: 4,
+      background:'rgba(255,255,255,0.25)', backdropFilter:'blur(6px)',
+      padding:'3px 9px', borderRadius:99, fontSize: 10, fontWeight: 700,
+    }}>🗳️ 투표</div>
+    <div style={{fontSize: 20, fontWeight: 900, marginTop: 10, letterSpacing:'-0.02em'}}>
+      동아리 MT 잡기 🌱
+    </div>
+    <div style={{fontSize: 11, marginTop: 8, opacity: 0.95}}>
+      호스트 · 민지 · 📅 마감 10/9 (목) 23:59
+    </div>
+  </div>
+);
+
+const DateCardDemo = () => (
+  <div style={{
+    background: T.surface, borderRadius: 22,
+    border: `1.5px solid ${T.border}`, overflow:'hidden',
+    width: 320,
+  }}>
+    <div style={{
+      padding: '12px 16px 10px',
+      background: `linear-gradient(135deg, ${T.primarySoft} 0%, ${T.accentSoft} 100%)`,
+      display:'flex', alignItems:'center', gap: 8,
+    }}>
+      <div style={{
+        width: 36, height: 36, borderRadius: 12, background:'#fff',
+        display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center',
+        lineHeight: 1, boxShadow: '0 1px 3px rgba(0,0,0,0.06)',
+      }}>
+        <div style={{fontSize: 8, fontWeight: 700, color: T.primary}}>10월</div>
+        <div style={{fontSize: 14, fontWeight: 800, color: T.ink}}>18</div>
+      </div>
+      <div>
+        <div style={{fontSize: 14, fontWeight: 800, color: T.ink}}>
+          10월 18일 <span style={{color:'#4F86C8', fontSize: 12}}>(토)</span>
+        </div>
+        <div style={{fontSize: 11, color: T.inkMute, marginTop: 1}}>가능한 시간 골라주세요</div>
+      </div>
+    </div>
+    <div style={{padding:'12px 14px 14px'}}>
+      <div style={{
+        display:'flex', justifyContent:'space-between', alignItems:'baseline', marginBottom: 10,
+      }}>
+        <div style={{display:'flex', alignItems:'center', gap: 6}}>
+          <span style={{fontSize: 15, fontWeight: 800, color: T.ink}}>14:00 ~ 18:00</span>
+          <span style={{
+            fontSize: 10, fontWeight: 800, color: '#fff',
+            background: `linear-gradient(135deg, ${T.pop}, ${T.primary})`,
+            padding: '3px 7px', borderRadius: 99,
+          }}>👑 최다</span>
+        </div>
+        <span style={{fontSize: 11, color: T.inkMute}}>5명 응답</span>
+      </div>
+      <div style={{display:'flex', gap: 8}}>
+        {[
+          {k:'yes', active:true, count:5, emoji:'👍', color: T.yes, soft: T.yesSoft},
+          {k:'maybe', active:false, count:0, emoji:'🤔', color: T.maybe, soft: T.maybeSoft},
+          {k:'no', active:false, count:0, emoji:'👎', color: T.no, soft: T.noSoft},
+        ].map(b => (
+          <div key={b.k} style={{
+            flex: 1, height: 56, borderRadius: 18,
+            background: b.active ? b.color : '#fff',
+            border: `2px solid ${b.active ? b.color : T.border}`,
+            color: b.active ? '#fff' : T.ink,
+            display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center',
+            boxShadow: b.active ? `0 6px 14px ${b.color}50, 0 0 0 3px ${b.soft}` : '0 1px 2px rgba(0,0,0,0.04)',
+          }}>
+            <span style={{fontSize: 22}}>{b.emoji}</span>
+            <span style={{fontSize: 10, fontWeight: 700, color: b.active ? '#fff' : b.color}}>{b.count}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+);
+
+// Participant card demo
+const ParticipantDemo = () => {
+  const palette = T.charPalette;
+  const done = [
+    {n:'민지', e:'🐰', host:true},
+    {n:'준호', e:'🍑'},
+    {n:'서연', e:'🌸'},
+    {n:'지훈', e:'🦊'},
+    {n:'하은', e:'🐱'},
+  ];
+  const pending = [
+    {n:'도윤', e:'🐧'},
+    {n:'예진', e:'🦄'},
+  ];
+  return (
+    <div style={{
+      background: T.surface, borderRadius: 22, border:`1.5px solid ${T.border}`,
+      padding: 18, width: 320,
+    }}>
+      <div style={{
+        display:'flex', justifyContent:'space-between', alignItems:'baseline', marginBottom: 12,
+      }}>
+        <div style={{fontSize: 14, fontWeight: 800, color: T.ink}}>
+          참여자 <span style={{color: T.inkMute, fontWeight: 600, fontSize: 12, marginLeft:4}}>5/7</span>
+        </div>
+        <span style={{
+          fontSize: 11, fontWeight: 600, color: T.primary,
+          background: T.primarySoft, padding:'3px 8px', borderRadius: 99,
+        }}>71% 완료</span>
+      </div>
+      <div style={{marginBottom: 12}}>
+        <span style={{
+          fontSize: 10, fontWeight: 700, color: T.yes,
+          background: T.yesSoft, padding:'2px 7px', borderRadius: 99,
+        }}>✓ 완료 5</span>
+      </div>
+      <div style={{display:'flex', flexWrap:'wrap', gap: 12, rowGap: 12, marginBottom: 12}}>
+        {done.map((v, i) => (
+          <div key={v.n} style={{display:'flex', flexDirection:'column', alignItems:'center', gap: 4, minWidth: 52}}>
+            <CuteAvatar avatar={v.e} avatarColor={palette[i % palette.length]} size={44} theme={T} done host={v.host}/>
+            <span style={{fontSize: 11, fontWeight: 600, color: T.ink}}>{v.n}{v.host && ' (나)'}</span>
+          </div>
+        ))}
+      </div>
+      <div style={{borderTop:`1px dashed ${T.divider}`, paddingTop: 12}}>
+        <span style={{
+          fontSize: 10, fontWeight: 700, color: T.inkSoft,
+          background: T.bg, padding:'2px 7px', borderRadius: 99,
+          border:`1px dashed ${T.border}`,
+        }}>⏳ 아직 2명</span>
+        <div style={{display:'flex', gap: 12, marginTop: 8}}>
+          {pending.map((v, i) => (
+            <div key={v.n} style={{display:'flex', flexDirection:'column', alignItems:'center', gap: 4, minWidth: 52}}>
+              <CuteAvatar avatar={v.e} avatarColor={palette[(i+5) % palette.length]} size={44} theme={T} done={false}/>
+              <span style={{fontSize: 11, fontWeight: 500, color: T.inkMute}}>{v.n}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Stacked bar
+const StackedBarDemo = () => (
+  <div style={{width: 280, display:'flex', flexDirection:'column', gap: 12}}>
+    {[
+      {l:'10/11 14–18', y:4, m:1, n:0},
+      {l:'10/18 14–18', y:5, m:0, n:0, best:true},
+      {l:'10/25 14–18', y:1, m:2, n:2},
+    ].map(r => {
+      const total = r.y + r.m + r.n;
+      return (
+        <div key={r.l}>
+          <div style={{
+            display:'flex', justifyContent:'space-between', alignItems:'center',
+            fontSize: 11, fontWeight: 700, marginBottom: 5,
+          }}>
+            <span>{r.l} {r.best && '👑'}</span>
+            <span style={{color: T.inkMute, fontWeight: 600}}>{total}명</span>
+          </div>
+          <div style={{display:'flex', height: 8, borderRadius: 4, overflow:'hidden', background: T.divider}}>
+            <div style={{flex: r.y, background: T.yes}}/>
+            <div style={{flex: r.m, background: T.maybe}}/>
+            <div style={{flex: r.n, background: T.no}}/>
+          </div>
+        </div>
+      );
+    })}
+  </div>
+);
+
+// Stickers
+const StickerDemo = () => (
+  <div style={{display:'flex', gap: 16, alignItems:'center', fontSize: 30}}>
+    <span style={{transform:'rotate(-15deg)', display:'inline-block'}}>✨</span>
+    <span style={{transform:'rotate(10deg)', display:'inline-block'}}>💫</span>
+    <span style={{transform:'rotate(-8deg)', display:'inline-block'}}>🌷</span>
+    <span style={{transform:'rotate(15deg)', display:'inline-block'}}>🎈</span>
+    <span style={{display:'inline-block'}}>🎉</span>
+    <span style={{transform:'rotate(-12deg)', display:'inline-block'}}>💖</span>
+    <span style={{transform:'rotate(8deg)', display:'inline-block'}}>⭐</span>
+    <span style={{transform:'rotate(-5deg)', display:'inline-block'}}>🌈</span>
+  </div>
+);
+
+// Avatar pool
+const AvatarPool = () => (
+  <div style={{display:'grid', gridTemplateColumns:'repeat(15, 1fr)', gap: 10, rowGap: 12}}>
+    {EMOJI_AVATARS.map((emoji, i) => (
+      <CuteAvatar
+        key={emoji + i}
+        avatar={emoji}
+        avatarColor={T.charPalette[i % T.charPalette.length]}
+        size={34} theme={T} done
+      />
+    ))}
+  </div>
+);
+
+// ═══════════════════════════════════════════════════════════════
+// APP
+// ═══════════════════════════════════════════════════════════════
+
+const App = () => (
+  <DesignCanvas
+    initialZoom={0.55}
+    title="폴래 · 디자인 시스템"
+    subtitle="Foundation · Atoms · Composite components"
+  >
+    <DCSection id="foundation" title="1. Foundation" subtitle="컬러 · 타이포 · 간격 · 라운드 · 그림자">
+      <DCArtboard id="colors" label="Colors" width={720} height={500}>
+        <SBCard title="Color tokens" subtitle="theme.* — 모든 화면에서 참조">
+          <FoundationColors/>
+        </SBCard>
+      </DCArtboard>
+      <DCArtboard id="type" label="Typography" width={520} height={460}>
+        <SBCard title="Typography scale" subtitle="Pretendard, weight 600–900">
+          <FoundationType/>
+        </SBCard>
+      </DCArtboard>
+      <DCArtboard id="radius" label="Radius" width={520} height={200}>
+        <SBCard title="Radius scale" subtitle="8 / 12 / 14 / 16 / 18 / 20 / 22 / pill">
+          <FoundationRadius/>
+        </SBCard>
+      </DCArtboard>
+      <DCArtboard id="spacing" label="Spacing" width={320} height={300}>
+        <SBCard title="Spacing scale" subtitle="px 단위">
+          <FoundationSpacing/>
+        </SBCard>
+      </DCArtboard>
+      <DCArtboard id="shadow" label="Shadows" width={420} height={220}>
+        <SBCard title="Elevation">
+          <FoundationShadows/>
+        </SBCard>
+      </DCArtboard>
+    </DCSection>
+
+    <DCSection id="atoms" title="2. Atoms" subtitle="작은 단위 컴포넌트">
+      <DCArtboard id="btn" label="Buttons" width={360} height={460}>
+        <SBCard title="Button" subtitle="PrimaryBtn · 기본/Ghost/Disabled">
+          <AtomsButtons/>
+        </SBCard>
+      </DCArtboard>
+      <DCArtboard id="input" label="Inputs" width={360} height={520}>
+        <SBCard title="Input" subtitle="텍스트 입력">
+          <AtomsInputs/>
+        </SBCard>
+      </DCArtboard>
+      <DCArtboard id="toggle" label="Toggle & Steps" width={300} height={220}>
+        <SBCard title="Toggle · ProgressDots">
+          <AtomsToggle/>
+        </SBCard>
+      </DCArtboard>
+      <DCArtboard id="chip" label="Chips" width={400} height={240}>
+        <SBCard title="Chip / Badge">
+          <AtomsChips/>
+        </SBCard>
+      </DCArtboard>
+      <DCArtboard id="avatar" label="Avatars" width={400} height={380}>
+        <SBCard title="CuteAvatar" subtitle="size 28–56 · 호스트 · 미투표 · 스택">
+          <AtomsAvatars/>
+        </SBCard>
+      </DCArtboard>
+      <DCArtboard id="sticker" label="Stickers" width={500} height={150}>
+        <SBCard title="Decorative stickers" subtitle="히어로 카드 등에 회전 배치">
+          <StickerDemo/>
+        </SBCard>
+      </DCArtboard>
+    </DCSection>
+
+    <DCSection id="votes" title="3. Vote components" subtitle="투표 응답 관련">
+      <DCArtboard id="vote-btn" label="VoteButton" width={360} height={300}>
+        <SBCard title="Vote button" subtitle="👍 🤔 👎 · 활성/비활성">
+          <VoteBtnDemo/>
+        </SBCard>
+      </DCArtboard>
+      <DCArtboard id="date-card" label="DateCard" width={380} height={290}>
+        <SBCard title="DateCard" subtitle="날짜 + 시간슬롯들 + 응답 버튼">
+          <DateCardDemo/>
+        </SBCard>
+      </DCArtboard>
+      <DCArtboard id="bar" label="StackedBar" width={360} height={250}>
+        <SBCard title="StackedBar" subtitle="결과 페이지 · 비공개 모드">
+          <StackedBarDemo/>
+        </SBCard>
+      </DCArtboard>
+    </DCSection>
+
+    <DCSection id="composite" title="4. Composite" subtitle="더 큰 단위 — 화면 안의 섹션들">
+      <DCArtboard id="hero" label="Hero card" width={380} height={200}>
+        <SBCard title="Hero (투표 페이지)" subtitle="그라데이션 + 스티커 + 메타">
+          <HeroDemo/>
+        </SBCard>
+      </DCArtboard>
+      <DCArtboard id="participants" label="Participants" width={380} height={400}>
+        <SBCard title="Participants card" subtitle="완료 / 미투표 그룹">
+          <ParticipantDemo/>
+        </SBCard>
+      </DCArtboard>
+    </DCSection>
+
+    <DCSection id="avatars" title="5. Avatar pool" subtitle={`이모지 ${EMOJI_AVATARS.length}종 · 회원가입 / 첫 응답 시 랜덤 배정 (이름과 무관)`}>
+      <DCArtboard id="pool" label="이모지 풀 전체" width={780} height={280}>
+        <SBCard title="이모지 아바타 라이브러리" subtitle="동물 · 음식 · 자연/심볼">
+          <AvatarPool/>
+        </SBCard>
+      </DCArtboard>
+    </DCSection>
+  </DesignCanvas>
+);
+
+const ready = () => {
+  if (window.DesignCanvas && window.CuteAvatar && window.PrimaryBtn && window.NavBar) {
+    ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+  } else setTimeout(ready, 50);
+};
+ready();
+</script>
+</body>
+</html>

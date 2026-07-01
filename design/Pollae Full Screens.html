@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>폴래 · 전체 화면 (젤리피치)</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css"/>
+<style>
+  html, body { margin:0; padding:0; background: #f0eee9; font-family: "Pretendard", -apple-system, system-ui, sans-serif; }
+  #root { min-height: 100vh; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+<script type="text/babel" src="design-canvas.jsx"></script>
+<script type="text/babel" src="ios-frame.jsx"></script>
+<script type="text/babel" src="pollae-tokens.jsx"></script>
+<script type="text/babel" src="cute-themes.jsx"></script>
+<script type="text/babel" src="demo-users.jsx"></script>
+<script type="text/babel" src="cute-chars.jsx"></script>
+<script type="text/babel" src="cute-vote.jsx"></script>
+<script type="text/babel" src="cute-create.jsx"></script>
+<script type="text/babel" src="cute-result.jsx"></script>
+
+<script type="text/babel" data-presets="env,react">
+const {
+  DesignCanvas, DCSection, DCArtboard, DCPostIt, IOSDevice,
+  CUTE_THEMES,
+  LandingScreen, CreateStep1Screen, CreateStep2Screen, CreateStep3Screen,
+  CuteVotePage, InviteScreen, ResultScreen, DashboardScreen,
+  EMOJI_AVATARS, CuteAvatar,
+} = window;
+
+const theme = CUTE_THEMES.jellyPeach;
+const Device = ({ children }) => <IOSDevice width={390} height={820}>{children}</IOSDevice>;
+
+// Avatar showcase — emoji pool
+const AvatarBoard = () => (
+  <div style={{
+    padding: 20, background: theme.surface, borderRadius: 20,
+    border: `1.5px solid ${theme.border}`,
+  }}>
+    <div style={{fontSize: 14, fontWeight: 800, color: theme.ink, marginBottom: 4}}>
+      이모지 아바타 — {EMOJI_AVATARS.length}종
+    </div>
+    <div style={{fontSize: 11, color: theme.inkSoft, marginBottom: 14}}>
+      가입/응답 시 랜덤 배정 · 같은 이름이어도 다른 사람일 수 있어요
+    </div>
+    <div style={{display:'grid', gridTemplateColumns:'repeat(12, 1fr)', gap: 10, rowGap: 12}}>
+      {EMOJI_AVATARS.map((emoji, i) => (
+        <CuteAvatar
+          key={emoji+i}
+          avatar={emoji}
+          avatarColor={theme.charPalette[i % theme.charPalette.length]}
+          size={36} theme={theme} done
+        />
+      ))}
+    </div>
+  </div>
+);
+
+const App = () => (
+  <DesignCanvas
+    initialZoom={0.5}
+    title="폴래 · 전체 화면"
+    subtitle="젤리피치 톤 · 1020 타겟 · 모든 스크린 하이파이"
+  >
+    <DCSection
+      id="entry"
+      title="1. 시작"
+      subtitle=""
+    >
+      <DCArtboard id="landing" label="① 랜딩/홈" width={414} height={844}>
+        <Device><LandingScreen theme={theme}/></Device>
+      </DCArtboard>
+      <DCArtboard id="dashboard" label="⑦ 호스트 대시보드" width={414} height={844}>
+        <Device><DashboardScreen theme={theme}/></Device>
+      </DCArtboard>
+    </DCSection>
+
+    <DCSection
+      id="create"
+      title="2. 투표 생성 (3단계)"
+      subtitle="이벤트 정보 → 일정 후보 → 옵션"
+    >
+      <DCArtboard id="step1" label="② 이벤트 정보" width={414} height={844}>
+        <Device><CreateStep1Screen theme={theme}/></Device>
+      </DCArtboard>
+      <DCArtboard id="step2" label="③ 일정 후보" width={414} height={844}>
+        <Device><CreateStep2Screen theme={theme}/></Device>
+      </DCArtboard>
+      <DCArtboard id="step3" label="④ 옵션" width={414} height={844}>
+        <Device><CreateStep3Screen theme={theme}/></Device>
+      </DCArtboard>
+      <DCArtboard id="invite" label="⑤ 초대장 / 공유" width={414} height={844}>
+        <Device><InviteScreen theme={theme}/></Device>
+      </DCArtboard>
+    </DCSection>
+
+    <DCSection
+      id="vote"
+      title="3. 투표 + 결과"
+      subtitle="핵심 화면"
+    >
+      <DCArtboard id="vote" label="⑥ 투표 페이지" width={414} height={844}>
+        <Device><CuteVotePage theme={theme}/></Device>
+      </DCArtboard>
+      <DCArtboard id="result" label="⑧ 마감 후 확정" width={414} height={844}>
+        <Device><ResultScreen theme={theme}/></Device>
+      </DCArtboard>
+    </DCSection>
+
+    <DCSection
+      id="avatars"
+      title="4. 캐릭터 라이브러리"
+      subtitle={`이모지 ${EMOJI_AVATARS.length}종 · 가입/응답 시 랜덤 배정`}
+    >
+      <DCArtboard id="avatar-grid" label="이모지 아바타 풀" width={760} height={300}>
+        <AvatarBoard/>
+      </DCArtboard>
+    </DCSection>
+
+    <DCSection
+      id="notes"
+      title="검토 포인트"
+      subtitle=""
+    >
+      <DCPostIt x={30} y={30} width={300}>
+        ✅ 적용한 것:{'\n\n'}
+        • 젤리피치 톤 통일 (핫핑크+피치+라벤더){'\n'}
+        • 캐릭터 아바타 ~58종으로 확장{'\n'}
+        • 이모지 + SVG 혼합{'\n'}
+        • 모든 화면 호스트 👑 표시
+      </DCPostIt>
+      <DCPostIt x={360} y={30} width={300} color="#ffd1bd">
+        💬 결정 필요:{'\n\n'}
+        • 카피 톤 OK? (반말/존댓말 섞임){'\n'}
+        • 이모지 아바타 종류 추가/제외?{'\n'}
+        • 그라데이션 강도 (현재 강함)
+      </DCPostIt>
+      <DCPostIt x={690} y={30} width={300} color="#cfe6cf">
+        🎯 다음 단계:{'\n\n'}
+        • 클릭 가능한 인터랙티브 프로토타입으로?{'\n'}
+        • 데스크탑 버전 (이 톤 기반){'\n'}
+        • 빈 상태 / 에러 화면
+      </DCPostIt>
+    </DCSection>
+  </DesignCanvas>
+);
+
+const ready = () => {
+  if (window.DesignCanvas && window.LandingScreen && window.CuteVotePage
+      && window.InviteScreen && window.ResultScreen && window.DashboardScreen
+      && window.CreateStep1Screen && window.CreateStep2Screen && window.CreateStep3Screen) {
+    ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+  } else setTimeout(ready, 50);
+};
+ready();
+</script>
+</body>
+</html>
