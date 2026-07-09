@@ -7,6 +7,7 @@ export type TPollType = 'schedule' | 'place' | 'custom'
 export type TEvent = {
   id: string
   host_id: string
+  code: string                   // 공유 단축코드 (v/[code])
   title: string
   description: string | null
   created_at: string

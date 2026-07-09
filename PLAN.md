@@ -27,8 +27,8 @@ vh# Pollae — 개발 계획서
 ## 1. 전체 Phase 요약
 
 ```
-Phase 0  프로젝트 세팅          🟡 거의 완료 (Supabase 실계정만 남음)
-Phase 1  DB 스키마 & 타입        ⬜ 미시작
+Phase 0  프로젝트 세팅          ✅ 완료
+Phase 1  DB 스키마 & 타입        ✅ 완료
 Phase 2  디자인 시스템 포팅       ⬜ 미시작
 Phase 3  투표 페이지 (핵심)       ⬜ 미시작
 Phase 4  이벤트 생성 플로우       ⬜ 미시작
@@ -70,13 +70,16 @@ Phase 8  마무리 & 배포           ⬜ 미시작
 
 **목표**: Supabase DB 구조 완성, TypeScript 타입 자동 생성
 
+> SQL: `supabase/migrations/0001_schema.sql` + `0002_rls.sql` 작성 완료.
+> 실제 적용·타입생성은 Supabase 프로젝트 생성 후(사용자) → `supabase/README.md` 참조.
+
 ```
-⬜ users 테이블 (Supabase Auth 연동)
+✅ profiles 테이블 (auth.users 연동 + 가입 트리거)
 
-⬜ events 테이블
-    id, host_id, title, description, created_at
+✅ events 테이블
+    id, host_id, code, title, description, created_at
 
-⬜ polls 테이블  ← 핵심 (구 time_slots 대체)
+✅ polls 테이블  ← 핵심 (구 time_slots 대체)
     id, event_id
     poll_type: 'schedule' | 'place' | 'custom'
     title                   -- "일정", "장소", 커스텀 제목
@@ -88,44 +91,30 @@ Phase 8  마무리 & 배포           ⬜ 미시작
     order: int              -- 표시 순서
     created_at
 
-⬜ poll_items 테이블  ← 핵심 (구 time_slots 통합)
-    id, poll_id
-    label: text             -- 항목명 (모든 타입 공통)
-    description: text (nullable)
-    slot_date: date (nullable)       -- schedule 전용
-    slot_time: time (nullable)       -- schedule 전용
-    slot_time_end: time (nullable)   -- schedule 전용
-    order: int
-    created_at
+✅ poll_items 테이블  ← 핵심 (구 time_slots 통합)
+    id, poll_id, label, description
+    slot_date / slot_time / slot_time_end  -- schedule 전용
+    order, created_at
 
-⬜ event_participants 테이블
-    id, event_id
-    user_id: uuid (nullable)  -- 게스트는 null
-    name, guest_token
-    has_voted: boolean
-    invited_at
+✅ event_participants 테이블
+    id, event_id, user_id(nullable), name, guest_token, has_voted, invited_at
 
-⬜ votes 테이블
-    id, participant_id
-    poll_item_id: uuid        -- 구 slot_id → poll_item_id
-    answer: 'yes' | 'maybe' | 'no'
-    voted_at
+✅ votes 테이블
+    id, participant_id, poll_item_id, answer, voted_at
 
-⬜ notifications 테이블
-    id, event_id, poll_id (nullable), user_id
-    type, channel, is_sent, scheduled_at
+✅ notifications 테이블
+    id, event_id, poll_id(nullable), user_id, type, channel, is_sent, scheduled_at
 
-⬜ RLS 정책 설정
-    events/polls: 호스트만 수정/삭제, 링크 있으면 조회
-    votes: 참여자 본인만 수정, 공개 poll은 전체 조회
-
-⬜ CHECK 제약: poll_items 최대 30개 per poll
-⬜ UNIQUE 제약: votes (participant_id, poll_item_id)
-⬜ supabase gen types → src/types/database.ts
-⬜ src/types/index.ts 와 database.ts 연결 확인
+✅ RLS 정책 설정 (0002_rls.sql)
+    조회: 링크 있으면 공개 / 쓰기: 호스트 + service_role API
+✅ 30개 제한: poll_items INSERT 트리거
+✅ UNIQUE 제약: votes (participant_id, poll_item_id)
+✅ supabase gen types → src/types/database.ts   (442줄, 7테이블)
+✅ src/types/index.ts 와 database.ts 연결 확인    (events Row = TEvent 일치)
 ```
 
-**완료 기준**: Supabase 대시보드에서 테이블 확인, 타입 파일 생성
+**완료 기준**: Supabase 대시보드에서 테이블 확인, 타입 파일 생성 ✅
+> 적용 완료: 프로젝트 `qxtaxmhpdlolflurkswq`(서울) 에 db push + 타입 생성 + anon 조회 스모크 통과.
 
 ---
 
