@@ -47,7 +47,7 @@
 핵심 UX: 카카오톡 링크 열자마자 회원가입 없이 바로 투표 가능.
 
 **제약**
-- 투표 슬롯 최대 30개 (날짜 × 시간 합산)
+- 투표 항목 최대 30개 — **Poll당** (schedule Poll은 날짜×시간 슬롯 합산, place/custom은 항목 수)
 - 게스트는 로그인 없음 → 브라우저 토큰으로 식별
 - 투표 완료 버튼 = 제출 개념 (임시저장 아님)
 - 마감 전까지 수정 가능 (같은 기기)
@@ -354,7 +354,7 @@ const { user, isLoading } = useHostGuard()
 ## 9. 비즈니스 로직
 
 ```typescript
-const MAX_SLOTS = 30  // 슬롯 최대 30개 (날짜×시간 합산)
+const MAX_SLOTS = 30  // Poll당 항목 최대 30개 (poll_items INSERT 트리거로 강제)
 
 // 게스트 중복 감지
 const isDuplicate = existing && existing.guest_token !== guestToken
