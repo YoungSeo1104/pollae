@@ -334,6 +334,8 @@ Phase 8  마무리 & 배포           ⬜ 미시작
     참조: design/cute-states.jsx
 ⬜ 모바일 반응형 전체 QA (iPhone SE ~ iPhone 15 Pro)
 ⬜ TypeScript type-check 에러 0개
+⬜ 테스트 전략 재검토 — 마감/집계/중복감지 로직 Vitest 유닛 테스트
+    (Phase 2에서 Storybook 자동 추가된 테스트 셋업 제거함 → 여기서 로직 대상 재도입 검토)
 ⬜ Lighthouse 모바일 점수 90+ (Performance, Accessibility)
 ⬜ OG 메타태그 (카카오톡 링크 미리보기)
 ⬜ favicon + 앱 아이콘

@@ -17,3 +17,19 @@ body {
   color: var(--foreground);
   font-family: var(--font-sans);
 }
+
+/* 눌림 인터랙션 — 버튼/탭 공통 */
+.pl-pressable {
+  cursor: pointer;
+  transition: transform 0.12s ease, filter 0.12s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+.pl-pressable:active {
+  transform: scale(0.96);
+  filter: brightness(0.97);
+}
+.pl-pressable:disabled {
+  cursor: default;
+  transform: none;
+  filter: none;
+}

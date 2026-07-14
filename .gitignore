@@ -59,3 +59,5 @@ supabase/.temp
 # 디버그
 .claude/
 *.local
+*storybook.log
+storybook-static
